@@ -1,0 +1,43 @@
+num;nombre;categoria;chasis;body
+1;Dani;4WD;Tamiya xv01;Skoda fabia R5
+2;ivan A.Gomez;4WD;rally legend;peugeot 306
+3;Juan antonio;4WD;Tamiya xv01;SEAT leon
+4;Kike Monerris;4WD;Tamiya ta02;Vw polo
+5;Dani Parra;4WD;Tamiya TA01;Toyota Celica
+6;Felipe Cañizares Navarro;4WD;TT01;FORD FIESTA R5
+7;Javier Herranz Garcia;4WD;XV-01;Toyota Celica
+8;Jose G.Monton;4WD;Carisma M40s;Golf
+9;Carlos ortiz;4WD;xv;Fiesta
+10;Miguel Castro;4WD;Carisma;VW Golf
+11;Jonathan ferrer martin;4WD;Lrp;Subaru sti
+12;Borja;4WD;VATERRA V100;ford fiesta
+13;José Luis;4WD;Tamiya TA02;Range Rover Evoque
+14;Feliciano Lopez;2WD;Tamiya M05RA;Lancia Stratos
+15;ivan A.Gomez;2WD;tamiya m05;renault R5
+16;Juan antonio;2WD;Tamiya m05;Swift
+17;Kike Monerris;2WD;Tamiya M05 ra;Suzuki swift
+18;Dani Parra;2WD;M05;Honda RSC
+19;Javier Herranz Garcia;2WD;M-03;Swift
+20;Jose G.Monton;2WD;M05-Ra;Nissan micra Rally
+21;Felipe Cañizares Navarro;2WD;M03;Suzuki Swift
+31;Javier Arevalo;4WD;XV01;Civic R3
+32;Quique;4WD;XV01;Subaru
+33;Yanti yanko;4WD;Tamiya xv01;Ford fiesta
+34;Jesus Rodriguez;4WD;Carisma m40s;Evo IV
+35;Alberto López;4WD;Losi XXXR;Subaru
+36;Juan Manuel Perea;4WD;HSP Xeme Pro;Subaru
+37;Giulio Marin;4WD;XV01;Subaru Imprezza
+38;Javier Ortiz;4WD;Tamiya XV01;VW Polo
+39;pitera;4WD;lrp maverick;bmw m3
+40;Diego Castro;4WD;Kiosho;Subaru
+41;Miguel Perolio;4WD;TT-02;Subaru sti
+42;Ricardo lagos Medina;4WD;Xv;Evo
+43;Alfredo Galan Pascual;2WD;M05;AUDI A3
+44;Javier Arevalo;2WD;M05;Mito
+45;Yanti yanko;2WD;M05;Swift
+46;Jesus rodriguez;2WD;M03;Swift
+47;Alberto López;2WD;Tamiya M05RA;Lancia Stratos
+48;Juan Manuel Perea;2WD;Tamiya M05;Ford Van Vintage
+49;Giulio Marin;2WD;M05ra;Renault 5 Turbo
+50;pitera;2WD;m03;skoda fabia
+51;Benjamin Diallo Gutierrez;2WD;M03;Suzuki Swift
