@@ -73,7 +73,7 @@ if(!isset($error_nav)){
       <div id="content">
 
         <!-- Topbar -->
-        <?php //include('topbar.php'); ?>
+        <?php include('topbar.php'); ?>
         <!-- End of Topbar -->
 
         <!-- Begin Page Content -->

@@ -97,6 +97,9 @@ function titulos_columnas($cols){
         <div id="content">
 
             <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <div class="d-none d-md-block pt-2"><h5><i class="fas fa-stopwatch"></i> RALLY RC CRONO 2.O.</h5></div> 
+            </nav>
             <?php //include('topbar.php'); ?>
             <!-- End of Topbar -->
 
@@ -106,19 +109,22 @@ function titulos_columnas($cols){
                 <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800"><?php echo($rally['name']) ?></h1>
 
+                <label for="selectCat">Categorías:</label>
                 <select name="selectCat" id="selectCat" onchange="changeFunc();">
-                    <option value="Todas">Todas</option>
+                    <option value="todas">Todas</option>
                     <?php foreach($categories as $category){
                             (isset($_GET['category']) AND $_GET['category'] == $category)? $selected = "selected" : $selected = "";
                             echo '<option value="'.$category.'" '.$selected.'>'.$category.'</option>';
                         } ?>
                     <option value="Absoluta" <?php if(isset($_GET['category']) AND $_GET['category'] == "Absoluta") echo "selected"; ?>>Absoluta</option>
                 </select>
+                <label for="selectStage">Tramos:</label>
                 <select name="selectStage" id="selectStage" onchange="changeFunc();">
                     <?php foreach($stages as $stage){
                             ($idstage == $stage['idstage'])? $selected = "selected" : $selected = "";
                             echo '<option value="'.$stage['idstage'].'" '.$selected.'>'.$stage['stage'].'</option>';
                         } ?>
+                    <option value="todos">Todos</option>
                 </select>
 
             <?php foreach($categories as $category): ?>
@@ -158,10 +164,14 @@ function titulos_columnas($cols){
                                             $dif_1 = "";
                                             $mejor_tiempo = $row['totaltime'];
                                             $ant_tiempo = $row['totaltime'];
-                                        } else { // Datos de diferencia de tiempos para el resto
+                                        } else if($row['totaltime']!="Abandono") { // Datos de diferencia de tiempos para el resto
                                             $dif_ant = "+". restar_tiempos($row['totaltime'], $ant_tiempo);
                                             $dif_1 = "+". restar_tiempos($row['totaltime'], $mejor_tiempo);
                                             $ant_tiempo = $row['totaltime'];
+                                        } else { // Abandono
+                                            $dif_ant = "+05.000"; // Penalización por abandono
+                                            $timeAbandona = sumar_tiempos($ant_tiempo, "00:05.000");
+                                            $dif_1 = "+". restar_tiempos($timeAbandona, $mejor_tiempo);
                                         }
                                         $pos++; 
                                         echo('  <td>'.$dif_ant.'</td>
@@ -200,12 +210,6 @@ function titulos_columnas($cols){
         <i class="fas fa-angle-up"></i>
     </a>
 
-<!-- Page level plugins -->
-<script src="vendor/datatables/jquery.dataTables.js"></script>
-<script src="vendor/datatables/dataTables.bootstrap4.js"></script>
-
-<!-- Page level custom scripts -->
-<!-- <script src="js/demo/datatables-demo.js"></script> -->
 <script>
 $(document).ready(function() {
     $('table.display').DataTable();
@@ -216,7 +220,13 @@ function changeFunc() {
     var selectedCat = selectCat.options[selectCat.selectedIndex].value;
     var selectStage = document.getElementById("selectStage");
     var selectedStage = selectStage.options[selectStage.selectedIndex].value;
-    if(selectedCat == "Todas"){
+    if(selectedStage=="todos"){
+        if(selectedCat!="todas"){
+            document.location.href = "rally.php?idrally=<?php echo $rally['id']; ?>&category="+selectedCat;
+        } else {
+            document.location.href = "rally.php?idrally=<?php echo $rally['id']; ?>";
+        }
+    }else if(selectedCat == "todas"){
         document.location.href = "stage.php?idrally=<?php echo $rally['id']; ?>&idstage="+selectedStage;
     } else {
         document.location.href = "stage.php?idrally=<?php echo $rally['id']; ?>&idstage="+selectedStage+"&category="+selectedCat;

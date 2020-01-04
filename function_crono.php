@@ -155,15 +155,6 @@ function js_crono($x=1){
 			document.timeform.tiempototal'.$x.'.value = "Abandono";
 			cambiaColorColumnas('.$x.', "abandona", document);
 			$("#ok'.$x.'").attr("class", "fas fa-exclamation-triangle");
-			save('.$x.',
-					 $(\'#idstage\').val(),
-					 $(\'#idrally\').val(),
-					 $(\'#stage\').val(),
-					 $(\'#idsignedup'.$x.'\').val(),
-					 $(\'#timetextarea'.$x.'\').val(),
-					 $(\'#penalizaciones'.$x.'\').val(),
-					 $(\'#tiempototal'.$x.'\').val()
-					);
 		}
 		
 		function ResetAbandona'.$x.'() {
@@ -175,15 +166,6 @@ function js_crono($x=1){
 			//document.timeform.tiempototal'.$x.'.value = document.timeform.timetextarea'.$x.'.value;
 			cambiaColorColumnas('.$x.', "stop", document);
 			$("#ok'.$x.'").attr("class", "fas fa-exclamation-triangle");
-			save('.$x.',
-					 $(\'#idstage\').val(),
-					 $(\'#idrally\').val(),
-					 $(\'#stage\').val(),
-					 $(\'#idsignedup'.$x.'\').val(),
-					 $(\'#timetextarea'.$x.'\').val(),
-					 $(\'#penalizaciones'.$x.'\').val(),
-					 $(\'#tiempototal'.$x.'\').val()
-					);
 		}
 
 	');

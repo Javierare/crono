@@ -40,10 +40,10 @@ function validar(timeform, accion) {
   document.timeform.submit();
 }
 
-function validar_zround(timeform){
+/*function validar_zround(timeform){
 	document.timeform.action = "load_zround";
 	document.timeform.submit();
-}
+}*/
 
 /*function recarga(timeform){
 	document.timeform.action = "crono";

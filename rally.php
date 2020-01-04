@@ -51,7 +51,7 @@ function stage_rows($idrally, $idstage, $category=false){
                                     WHERE sta.idrally = ".$idrally." 
                                     AND sta.idstage = ".$idstage.
                                     $and_category." 
-                                    ORDER BY sta.idstage"))
+                                    ORDER BY sta.totaltime"))
     $errors['stage.php'] = 'El rally aún no tiene datos o no se pudieron obtener.';
     return $stage;
 }
@@ -90,7 +90,13 @@ function res_rally_category($idrally, $stages, $category, $op_cols, $points){
         foreach($stage_rows as $stage_row) {
             $id = $stage_row['idsignedup']; // idsignedup sirve para identificar al piloto
             if(!isset($sum_times[$id])) $sum_times[$id] = "00:00.000"; // Empieza el sumatorio en 00:00:000
-            $sum_times[$id] = sumar_tiempos($sum_times[$id], $stage_row['totaltime']); // Voy sumando los tiempos de cada tramo
+            if($stage_row['totaltime']=="Abandono"){ // En caso de abandono
+                $time_abandono = sumar_tiempos($last_time, "00:05.000"); // suma la penalización al tiempo del más lento
+                $sum_times[$id] = sumar_tiempos($sum_times[$id], $time_abandono); // Voy sumando los tiempos de cada tramo
+            } else {
+                $sum_times[$id] = sumar_tiempos($sum_times[$id], $stage_row['totaltime']); // Voy sumando los tiempos de cada tramo
+                $last_time = $stage_row['totaltime']; // Al estar ordenados por tiempos vamos guardando el más lento para el caso de que haya abandonos
+            }
             //$pilotos[$id]['stage'.$t] = $stage_row['stage']; // Añado una columan por cada
             $pilotos[$id]['totaltime'.$t] = $stage_row['totaltime'];
             $pilotos[$id]['rallytime'] = $sum_times[$id];
@@ -149,6 +155,9 @@ function titulos_columnas($cols, $show_difs, $show_points){
         <div id="content">
 
             <!-- Topbar -->
+            <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+                <div class="d-none d-md-block pt-2"><h5><i class="fas fa-stopwatch"></i> RALLY RC CRONO 2.O.</h5></div> 
+            </nav>
             <?php //include('topbar.php'); ?>
             <!-- End of Topbar -->
 
@@ -157,14 +166,22 @@ function titulos_columnas($cols, $show_difs, $show_points){
 
                 <!-- Page Heading -->
                 <h1 class="h3 mb-4 text-gray-800"><?php echo($rally['name']) ?></h1>
-                <div class="text-right">
+                <div class="text-left">
+                <label for="selectCat">Categorías:</label>
                 <select name="selectCat" id="selectCat" onchange="changeFunc();">
-                    <option value="Todas">Todas</option>
+                    <option value="todas">Todas</option>
                     <?php foreach($categories as $category){
                             (isset($_GET['category']) AND $_GET['category'] == $category)? $selected = "selected" : $selected = "";
                             echo '<option value="'.$category.'" '.$selected.'>'.$category.'</option>';
                         } ?>
                     <option value="Absoluta" <?php if(isset($_GET['category']) AND $_GET['category'] == "Absoluta") echo "selected"; ?>>Absoluta</option>
+                </select>
+                <label for="selectStage">Tramos:</label>
+                <select name="selectStage" id="selectStage" onchange="changeFunc();">
+                    <?php foreach($stages as $stage){
+                           echo '<option value="'.$stage['idstage'].'">'.$stage['stage'].'</option>';
+                        } ?>
+                    <option value="todos" selected>Todos</option>
                 </select>
                 </div>
 
@@ -198,7 +215,8 @@ function titulos_columnas($cols, $show_difs, $show_points){
                                     foreach($pilotos as $piloto){ // Genera filas
                                         echo '<tr>';
                                         foreach($cols as $key=>$col){
-                                            echo '<td>'.utf8_encode($piloto[$col]).'</td>'; 
+                                            if(isset($piloto[$col])) echo '<td>'.utf8_encode($piloto[$col]).'</td>'; // El piloto ha corrido este tramo
+                                            else  echo '<td></td>'; // Aún no ha corrido el tramo
                                         }
                                         if($show_difs){ // si se quiere mostrar las diferencias
                                             if($piloto['pos']==1){ // Datos para el piloto que hizo mejor tiempo
@@ -251,24 +269,26 @@ function titulos_columnas($cols, $show_difs, $show_points){
         <i class="fas fa-angle-up"></i>
     </a>
 
-<!-- Page level plugins -->
-<script src="vendor/datatables/jquery.dataTables.min.js"></script>
-<script src="vendor/datatables/dataTables.bootstrap4.min.js"></script>
-
-<!-- Page level custom scripts -->
-<script src="js/demo/datatables-demo.js"></script>
 <script>
 $(document).ready(function() {
     $('table.display').DataTable();
 } );
 
 function changeFunc() {
-    var selectBox = document.getElementById("selectCat");
-    var selectedValue = selectBox.options[selectBox.selectedIndex].value;
-    if(selectedValue == "Todas"){
-        document.location.href = "rally.php?idrally=<?php echo $rally['id']; ?>";
+    var selectCat = document.getElementById("selectCat");
+    var selectedCat = selectCat.options[selectCat.selectedIndex].value;
+    var selectStage = document.getElementById("selectStage");
+    var selectedStage = selectStage.options[selectStage.selectedIndex].value;
+    if(selectedStage=="todos"){
+        if(selectedCat!="todas"){
+            document.location.href = "rally.php?idrally=<?php echo $rally['id']; ?>&category="+selectedCat;
+        } else {
+            document.location.href = "rally.php?idrally=<?php echo $rally['id']; ?>";
+        }
+    }else if(selectedCat == "todas"){
+        document.location.href = "stage.php?idrally=<?php echo $rally['id']; ?>&idstage="+selectedStage;
     } else {
-        document.location.href = "rally.php?idrally=<?php echo $rally['id']; ?>&category="+selectedValue;
+        document.location.href = "stage.php?idrally=<?php echo $rally['id']; ?>&idstage="+selectedStage+"&category="+selectedCat;
     }
 }
 </script>
