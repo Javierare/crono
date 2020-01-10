@@ -52,6 +52,7 @@ if(isset($_GET['unsignup'])){
 
 $cars = consulta_multi("cars", "iduser=".$_SESSION['userid']);
 $open_rallies = consulta_multi("rallies", "open=1");
+$user = consulta("users", "id=".$_SESSION['userid']);
 
 // Include common functions
 include ('function_common.php');
@@ -117,70 +118,4 @@ function list_signed_cars($open_rally, $cars){
 		}
 	}
 }
-
-// Escribir lista de rallies abiertos para inscripción y coches inscritos
-/*function list_open_rallies($open_rallies, $cars){
-	foreach ($open_rallies as $rally) {
-		$inscritos = array(); // Almacena filas de la tabla signedup
-		$car_ins = array();  // Almacena filas de la tabla cars
-		$cont = 0;
-		$categoies = explode(";", $rally['categories']);
-		echo'
-			<nav class="navbar navbar-expand navbar-light bg-light mb-4">
-				<a class="navbar-brand" href="#">'.$rally['name'].'</a>';
-		// Desplegable de categorias
-		echo'		
-				<ul class="navbar-nav ml-auto">
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					Categoria
-					</a>
-					<div class="dropdown-menu dropdown-menu-right animated--grow-in" aria-labelledby="navbarDropdown">';
-			foreach($categoies as $category){
-				echo'<div class="radio">
-						<label><input type="radio" name="category" value="'.$category.'" checked> '.$category.'</label>
-					</div>';
-					}
-		echo'		</div>
-				</li>
-				</ul>';
-		// Desplegable de los coches
-		echo'	
-				<ul class="navbar-nav ml-auto">
-				<li class="nav-item dropdown">
-					<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-					Inscribir coche
-					</a>
-					<div class="dropdown-menu dropdown-menu-right animated--grow-in" aria-labelledby="navbarDropdown">';
-												
-		foreach($cars as $car){					// Comprueba cada coche del usuario:
-			if($res = consulta_multi('signedup', 'idrally='.$rally['id'].' AND iduser='.$_SESSION['userid'].' AND idcar='.$car['id'])){
-				$car_ins[$cont] = $car; 		// si está inscrito se guarda en coches_inscritos
-				$inscritos[$cont++] = $res; 	// y también se guarda la fila de inscripción
-			} else { 							// si no, se coloca en el deplegable para que el usuario pueda inscribirlo
-				//echo '<a class="dropdown-item" href="user.php?signup='.$car['id'].'&rally='.$rally['id'].'">'.$car['chassis'].' - '.$car['body'].'</a>';
-				echo '<a class="dropdown-item" href="user.php?signup='.$car['id'].'&rally='.$rally['id'].'">'.$car['chassis'].' - '.$car['body'].'</a>';
-			}
-		}
-		echo '		</div>
-				</li>
-				</ul>
-			</nav>';
-		// Los coches inscritos se listan con un link a "eliminar"
-		$cont = 0;
-		foreach($inscritos as $signed){
-			echo '<h5>';
-			echo $car_ins[$cont]['chassis'].' - '.$car_ins[$cont]['body'].'
-				&nbsp;&nbsp;<a href="user.php?unsignup='.$signed[0]['id'].'" class="btn btn-sm btn-danger btn-icon-split">
-				<span class="icon text-white-50">
-				<i class="fas fa-trash"></i>
-				</span>
-				<span class="text">Eliminar</span>
-			</a>
-			</h5>';
-			$cont++;
-		}
-		echo '<hr>';
-	}
-}*/
 ?>

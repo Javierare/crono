@@ -12,10 +12,30 @@ if($_SESSION['permission'] != ADMIN) {
 $errors = array();
 $p = "penalties.php";
 
+// Recupera penalización por abandono
+if($penAbandono = consulta("penalties", 'name="abandono"')) $retSeconds = $penAbandono['seconds'];
+else $retSeconds = false;
+
+// Inserta o modifica penalización por abandono
+if(isset($_POST['saveRet'])){
+  if($penAbandono) { // modificar
+    $data['seconds'] = mysqli_real_escape_string($db, $_POST['retSeconds']);
+    if(!modificar("penalties", $data, $penAbandono['id']))
+        $errors[$p.'-penalizaciones'] = 'Error al modificar penalizacion por abandono';
+  } else {
+    $data['name'] = "abandono";
+    $data['seconds'] = mysqli_real_escape_string($db, $_POST['retSeconds']);
+    $data['description'] = utf8_decode("Penalización por abandono");
+    if(!insertar("penalties", $data)) 
+        $errors[$p.'-penalizaciones'] = 'Error al crear penalizacion por abandono';  
+  }
+  $retSeconds = $_POST['retSeconds'];
+}
+
 // Anade nueva penalización 
 if(isset($_POST['addPen'])){
   $data['name'] = utf8_decode(mysqli_real_escape_string($db, $_POST['penaltyName']));
-  $data['seconds'] = mysqli_real_escape_string($db, $_POST['penaltySeconds']);
+  $data['seconds'] = $_POST['penaltySeconds'];
   $data['description'] = utf8_decode(mysqli_real_escape_string($db, $_POST['penaltyDesc']));
   if(!insertar("penalties", $data)) 
       $errors[$p.'-penalizaciones'] = 'Error al crear penalizacion';
@@ -30,6 +50,7 @@ if(isset($_GET['delPen'])){
 // Pintar penalizaciones con botón de eliminar
 function listar_penalizaciones($penalties){
     foreach($penalties as $penalty){
+      if($penalty['name']!="abandono"){
         echo '<div class="card border-left-primary shadow py-0">
             <div class="card-body">
                 <div class="row no-gutters align-items-center">
@@ -47,6 +68,7 @@ function listar_penalizaciones($penalties){
                 </div>
             </div>
         </div>'; 
+      }
     }
 }
 
@@ -87,7 +109,7 @@ include ('header.php');
             <!-- Columna Izda -->
             <div class="col-lg-6">
 
-              <!-- Penaltes Card -->
+              <!-- Penalties Card -->
               <!-- Ficha donde crear y eliminar penalizaciones -->
               <div class="card shadow mb-4">
                 <div class="card-header py-3">
@@ -98,15 +120,15 @@ include ('header.php');
                   <form action="penalties.php" method="post">
                     <div class="form-group">
                         <label for="penaltyName">Penalización:</label>
-                        <input type="name" class="form-control" placeholder="Penalty name" name="penaltyName" required>
+                        <input type="text" class="form-control" placeholder="Penalty name" name="penaltyName" required pattern="^(?!abandono).*$" title="'abandono' es una palabra reservada">
                     </div>
                     <div class="form-group">
                         <label for="penaltySeconds">Tiempo en segundos:</label>
-                        <input type="name" class="form-control" placeholder="Seconds" name="penaltySeconds" required pattern="[0-9.]+">
+                        <input type="text" class="form-control" placeholder="Seconds" name="penaltySeconds" required pattern="[0-9.]+" title="Numero de segundos. Punto para decimales. Ejemplos: 0.5, 3">
                     </div>
                     <div class="form-group">
                         <label for="penaltyDesc">Condición que genera la penalización:</label>
-                        <input type="name" class="form-control" placeholder="Description" name="penaltyDesc" required>
+                        <input type="text" class="form-control" placeholder="Description" name="penaltyDesc" required>
                     </div>    
                     <div class="form-group text-center">
                         <button type="submit" class="btn btn-primary" name="addPen">Guardar</button>
@@ -116,6 +138,29 @@ include ('header.php');
                 <!-- End Basic Card -->
               </div>
               <!-- End penalizaciones Card -->
+
+              <!-- Retirement penalty Card -->
+              <!-- Ficha donde congfigurar penalizacion por abandono -->
+              <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                  <h6 class="m-0 font-weight-bold text-primary">Penalización por abandono</h6>
+                </div>
+                <div class="card-body">
+                  <?php if(isset($errors[$p.'-retirements'])) include "errors.php"; ?>
+                  <form action="penalties.php" method="post">
+                    <div class="form-group">
+                        <label for="retSeconds">Tiempo mayor más:</label>
+                        <input type="text" class="form-control" placeholder="Seconds" name="retSeconds" required pattern="[0-9.]+" title="Tiempo en segundos" <?php if($retSeconds) echo "value=".$retSeconds; ?>>
+                        segundos
+                    </div>
+                    <div class="form-group text-center">
+                        <button type="submit" class="btn btn-primary" name="saveRet">Guardar</button>
+                    </div>
+                  </form>
+                </div>
+                <!-- End Basic Card -->
+              </div>
+              <!-- End Retirement penalty Card -->
             
             </div>
             <!-- End Columna Izqda -->

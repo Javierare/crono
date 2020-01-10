@@ -33,7 +33,7 @@ include('header.php');
                       <?php include('errors.php'); ?>
                     </div>
                     <div class="form-group">
-                      <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address..." name="email" required>
+                      <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Dirección de Email" name="email" required>
                     </div>
                     <?php select_clubes(); ?>
                     <div class="form-group">

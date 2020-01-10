@@ -8,7 +8,8 @@ $p = "server";
 
 // Print clubs list in a select
 function select_clubes(){
-  if($clubs = consulta_especial("SELECT * FROM clubs")){
+  echo '<input type="hidden" name="prefix" value="rcm_">';
+  /*if($clubs = consulta_especial("SELECT * FROM clubs")){
     echo '<div class="form-group">
           <label for="clubes">Seleccione su club:</label>
           <select class="form-control" name="prefix">';
@@ -19,7 +20,7 @@ function select_clubes(){
         </div>';
   } else {
     return false;
-  }
+  }*/
 }
 
 // REGISTER USER

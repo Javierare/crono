@@ -89,29 +89,35 @@ function setAbandonos(categoria, penalizacion){
 	var inscritos = document.getElementById("n_pilotos").value;
 	var cont = 0; // contador para camposTiemposCero
 	var camposAbandono = new Array(); //Se almacenan en este array los campos con tiempo "Abandono"
+	var camposPenalizacion = new Array();
+	var camposTimetextarea = new Array();
 	var tiempos = new Array();  // Se almacenan los tiempos para buscar el tiempo mayor
+	var fila = new Array(); // El número que identifica la fila
 	var tiempoMayor = "00:00";   
 	// Se recorren los valores de los campos "tiempototal"
 	for(var i=1; i<= inscritos; i++){
 		if(categoria == document.getElementById("categoria"+i).value) {
 			tiempos[i] = document.getElementById("tiempototal"+i).value;
 			if(tiempos[i] == "Abandono") {
-				document.getElementById("timetextarea"+i).value = "Abandona";
+				document.getElementById("timetextarea"+i).value = "Abandono";
 				// Se almacenan los punteros a los campos que tienen valor = Abandono
 				camposAbandono[cont] = document.getElementById("tiempototal"+i); 
+				camposPenalizacion[cont] = document.getElementById("penalizaciones"+i);
+				camposTimetextarea[cont] = document.getElementById("timetextarea"+i); 
+				fila[cont] = i;
 				cont++;
 			} else {
 				if(tiempos[i] > tiempoMayor) tiempoMayor = tiempos[i]; // Se almacena en tiempos[] el tiempo mayor
 			}
 		}
 	}
-	// Si existe algún elemento del array que tiene los campos con Abandono
-	// se le coloca la penalización (tiempo mayor más 5 seg.)
+	// Si existe algún elemento del array que tiene los campos con Abandono:
+	// se le coloca la penalización (tiempo mayor más penalización)
 	if(cont > 0){
 		var strMinutos = tiempoMayor.substr(0, 2);
 		var minutos = parseInt(strMinutos);
 		var strSegundos = tiempoMayor.substr(3, 2);
-		var segundos = parseInt(strSegundos) + penalizacion; // Tiempo mayor + 5 seg.
+		var segundos = parseInt(strSegundos) + penalizacion;
 		if(segundos>60) {
 			segundos = segundos-60;
 			minutos++;
@@ -125,6 +131,17 @@ function setAbandonos(categoria, penalizacion){
 		
 		for(var x=0; x<cont; x++){
 			camposAbandono[x].value = penalizacion;
+			camposPenalizacion[x].value = "0";
+			camposTimetextarea[x].value = "Abandona";
+			save(fila[x],
+				$('#idstage').val(),
+				$('#idrally').val(),
+				$('#stage').val(),
+				$('#idsignedup'+fila[x]).val(),
+				$('#timetextarea'+fila[x]).val(),
+				$('#penalizaciones'+fila[x]).val(),
+				$('#tiempototal'+fila[x]).val()
+			);
 		}
 	}
 }
@@ -146,6 +163,33 @@ function convertir_msmm(timeend){
 		milliseconds_passed = "0" + milliseconds_passed;
 	}
 	return minutes_passed + ":" + seconds_passed + "." + milliseconds_passed;
+}
+
+// Formato del tiempo 00:00.000 minutos, segundos, milisegundos
+function suma_segundos(tiempo, sec){
+	var strMinutos = tiempo.substr(0, 2);
+	var strSegundos = tiempo.substr(3, 2);
+	var strMilisegundos = tiempo.substr(6, 3);
+	var minutos = parseInt(strMinutos);
+	var segundos = parseInt(strSegundos);
+	var milisegundos = parseInt(strMilisegundos);
+	var summilisec = parseFloat(sec)*1000;
+	
+	var totalmilisegundos = milisegundos + summilisec;
+	milisegundos = totalmilisegundos % 1000;
+	var totalsegundos = segundos + Math.trunc(totalmilisegundos / 1000);
+	segundos = totalsegundos % 60;
+	minutos = minutos + Math.trunc(totalsegundos / 60);
+	
+	if(segundos<10) strSegundos = "0" + segundos.toString();
+	else strSegundos = segundos.toString();
+	if(minutos<10) strMinutos = "0" + minutos.toString();
+	else strMinutos = minutos.toString();
+	if(milisegundos<10) strMilisegundos = "00" + milisegundos;
+	else if (milisegundos<100) strMilisegundos = "0" + milisegundos;
+	else strMilisegundos = milisegundos;
+	
+	return strMinutos + ":" + strSegundos + "." + strMilisegundos;
 }
 
 // Cambia el color de las filas dependiendo del estado del piloto en el tramo

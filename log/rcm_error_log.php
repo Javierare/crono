@@ -40,3 +40,11 @@ new_rallies.php-delSignedup19: No se ha podido eliminar la inscripción
 new_rallies.php-delSignedup5: No se ha podido eliminar la inscripción
 2019-12-27 19:01:48 | 2 | Admin | rcm_ | 1
 new_rallies.php-delSignedup19: No se ha podido eliminar la inscripción
+2020-01-09 11:09:12 | 10 | pepe | rcm_ | 2
+function_user: No se pudo guardar en la base de datos
+2020-01-09 11:10:22 | 10 | pepe | rcm_ | 2
+function_user: Email ya existe
+2020-01-09 11:11:47 | 10 | pepe | rcm_ | 2
+function_user: No se pudo guardar en la base de datos
+2020-01-09 11:15:02 | 10 | pepe | rcm_ | 2
+function_user: Las contraseñas no coinciden

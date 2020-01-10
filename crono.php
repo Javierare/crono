@@ -34,8 +34,19 @@ if(isset($_GET['idrally'])){
         $stage_name = $stage_rows[0]['stage']; 
       }
     }
+    // Obtener las penalizaciones:
+    // Si no hay se establecen por defecto el abandono y 0,5 sec.
+    $abandono = 5;
+    $penalizaciones[0] = array("name"=>"0.5", "seconds"=>0.5, "description"=>"Penalización estándar");
+    if($penalties = consulta_multi("penalties")){
+      $i = 0;
+      foreach($penalties as $penalty){
+        if($penalty['name']=="abandono") $abandono = $penalty['seconds'];
+        else $penalizaciones[$i++] = $penalty;
+      }
+    }
     // Después de todas las comprobaciones tenemos:
-    // $idrally, $idstage, $rally, [$stages, $stage_rows]
+    // $idrally, $idstage, $rally, [$stages, $stage_rows], $abandono, $penalizaciones
   }
 } else {
   $error_nav = "Para acceder al crono hay que especificar un rally";
@@ -93,81 +104,90 @@ if(!isset($error_nav)){
             <script src="funciones.js" type="text/javascript"></script>
 
             <script language="JavaScript">
-            <?php
-            // Genera el codigo JS para manejar el crono
-            // Ojo! el contador comienza en 1 para hacerlo coincidir con los id de la tabla stages:
-            // Así idntificadores$x = id en tabla stages
-            for($x=1; $x<=$n_inscritos; $x++){
-              js_crono($x);
-            }
-            ?>
+              <?php
+              // Genera el codigo JS para manejar el crono
+              // Ojo! el contador comienza en 1 para hacerlo coincidir con los id de la tabla stages:
+              // Así idntificadores$x = id en tabla stages
+              for($x=1; $x<=$n_inscritos; $x++){
+                js_crono($x);
+              }
+              ?>
             </script>
             <div id="resultado"></div>
             <form id="timeform" name="timeform" method="post" action= onsubmit="return validar(timeform, action)">
-            <h5><?php echo($stage_name); // Nombre del tramo (automático) ?></h5> 
-            <input type="hidden" name="stage" id="stage" value="<?php echo($stage_name); ?>"/>
-            <input type="hidden" name="idstage" id="idstage" value="<?php echo($idstage); ?>">
-            <input type="hidden" name="idrally" id="idrally" value="<?php echo($idrally); ?>"> 
-            <input type="hidden" name="n_pilotos" id="n_pilotos" value="<?php echo($n_inscritos); ?>"> 
-              <div class="table-responsive">
-                <table class="table table-bordered table-striped table-hover table-sm" id="dataTable" width="100%" cellspacing="0">
-                  <thead>
-                    <?php titulos_columnas($campos); ?>
-                  </thead>
-                  <tbody>
-                    <?php // Inicializamos los valores de los tiempos
-                          $tiempototal = "00:00";
-                          $timetextarea = "00:00";
-                          $penalizaciones = "0";
-                          $x = 1; // Empezamos en 1 para coincidir con el id de la tabla stages
-                          // Recorremos las inscripciones
-                          foreach($inscripciones as $inscripcion) {
-                            // Si estamos editando el tramo:
-                            if (isset($load_stage)) {
-                              // Recorremos la tabla stages,
-                              foreach($stage_rows as $stage_row) {
-                                // Si el inscrito ya tiene tiempo guardadto,
-                                if ($inscripcion['idsignedup'] == $stage_row['idsignedup']) {
-                                  // recuperamos los tiempos para pintarlos en el crono
-                                  $timetextarea = $stage_row['time'];
-                                  $penalizaciones = $stage_row['penalties'];
-                                  $tiempototal = $stage_row['totaltime'];
-                                break;
-                                  // Si no tiene tiempo guardado iniciamos en ceros
-                                } else {
-                                  $tiempototal = "00:00";
-                                  $timetextarea = "00:00";
-                                  $penalizaciones = "0";
+              <h5><?php echo($stage_name); // Nombre del tramo (automático) ?></h5> 
+              <input type="hidden" name="stage" id="stage" value="<?php echo($stage_name); ?>"/>
+              <input type="hidden" name="idstage" id="idstage" value="<?php echo($idstage); ?>">
+              <input type="hidden" name="idrally" id="idrally" value="<?php echo($idrally); ?>"> 
+              <input type="hidden" name="n_pilotos" id="n_pilotos" value="<?php echo($n_inscritos); ?>"> 
+                <div class="table-responsive">
+                  <table class="table table-bordered table-striped table-hover table-sm" id="dataTable" width="100%" cellspacing="0">
+                    <thead>
+                      <?php titulos_columnas($campos); ?>
+                    </thead>
+                    <tbody>
+                      <?php // Inicializamos los valores de los tiempos
+                            $tiempototal = "00:00";
+                            $timetextarea = "00:00";
+                            $time_penalties = "0";
+                            $x = 1; // Empezamos en 1 para coincidir con el id de la tabla stages
+                            // Recorremos las inscripciones
+                            foreach($inscripciones as $inscripcion) {
+                              // Si estamos editando el tramo:
+                              if (isset($load_stage)) {
+                                // Recorremos la tabla stages,
+                                foreach($stage_rows as $stage_row) {
+                                  // Si el inscrito ya tiene tiempo guardadto,
+                                  if ($inscripcion['idsignedup'] == $stage_row['idsignedup']) {
+                                    // recuperamos los tiempos para pintarlos en el crono
+                                    $timetextarea = $stage_row['time'];
+                                    $time_penalties = $stage_row['penalties'];
+                                    $tiempototal = $stage_row['totaltime'];
+                                  break;
+                                    // Si no tiene tiempo guardado iniciamos en ceros
+                                  } else {
+                                    $tiempototal = "00:00";
+                                    $timetextarea = "00:00";
+                                    $time_penalties = "0";
+                                  }
                                 }
                               }
-                            }
-                            // Pintamos las filas del crono
-                            filas_crono($x++, $campos, $inscripcion, $timetextarea, $penalizaciones, $tiempototal);
-                          } ?> 
-                  </tbody>
-                </table>
+                              // Pintamos las filas del crono
+                              filas_crono($x++, $campos, $inscripcion, $timetextarea, $time_penalties, $tiempototal, $penalizaciones);
+                            } 
+                      ?> 
+                    </tbody>
+                  </table>
+                </div>
+              <div class="text-center">
+                <!-- Boton siguiente tramo -->
+                <div class="form-group">
+                  <a href="#" class="btn btn-secondary btn-icon-split" onclick="validar(timeform, 'crono.php?idrally=<?php echo($idrally); ?>')">
+                    <span class="icon text-white-50">
+                      <i class="fas fa-arrow-right"></i>
+                    </span>
+                    <span class="text">Siguiente tramo</span>
+                  </a>
+                </div>
+                <!-- Botones para editar los tramos ya corridos -->
+                <div class="form-group">
+                  <?php 
+                  if(isset($stages)){
+                    foreach($stages as $stage) {
+                      ($stage['idstage']==$idstage)? $disable = "disabled" : $disable = "";
+                      echo '<input type="button" class="btn btn-primary" onclick="validar(timeform, \'crono.php?idstage='.$stage['idstage'].'&idrally='.$idrally.'\')" value="'.$stage['stage'].'" '.$disable.'/>';
+                    }
+                  }
+                  ?>
+                </div>
+                  <a href="#" class="btn btn-success btn-icon-split">
+                    <span class="icon text-white-50">
+                      <i class="fas fa-flag"></i>
+                    </span>
+                    <span class="text">Finalizar Rally</span>
+                  </a>
+
               </div>
-            <div class="text-center">
-            <div class="form-group">
-            <a href="#" class="btn btn-secondary btn-icon-split" onclick="validar(timeform, 'crono.php?idrally=<?php echo($idrally); ?>')">
-              <span class="icon text-white-50">
-                <i class="fas fa-arrow-right"></i>
-              </span>
-              <span class="text">Siguiente tramo</span>
-            </a>
-            </div>
-            <!-- Botones para editar los tramos ya corridos -->
-            <div class="form-group">
-            <?php 
-            if(isset($stages)){
-              foreach($stages as $stage) {
-                ($stage['idstage']==$idstage)? $disable = "disabled" : $disable = "";
-                echo '<input type="button" class="btn btn-primary" onclick="validar(timeform, \'crono.php?idstage='.$stage['idstage'].'&idrally='.$idrally.'\')" value="'.$stage['stage'].'" '.$disable.'/>';
-              }
-            }
-            ?>
-            </div>
-            </div>
             </form>
 
           <?php endif; ?>

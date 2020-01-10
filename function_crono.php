@@ -84,6 +84,7 @@ function js_crono($x=1){
 				document.timeform.timetextarea'.$x.'.value = "00:00";
 			}
 			timercount'.$x.'  = setTimeout("showtimer'.$x.'()", 1000);
+			document.timeform.penalizaciones'.$x.'.value = "0";
 			cambiaColorColumnas('.$x.', "sw_start", document);
 			$("#ok'.$x.'").attr("class", "fas fa-exclamation-triangle");
 		}
@@ -94,6 +95,7 @@ function js_crono($x=1){
 				timeend'.$x.' = new Date();
 				timedifference = timeend'.$x.'.getTime() - timestart'.$x.'.getTime();
 				timeend'.$x.'.setTime(timedifference);
+				document.timeform.penalizaciones'.$x.'.value = "0";
 				document.timeform.timetextarea'.$x.'.value = convertir_msmm(timeend'.$x.');
 				document.timeform.tiempototal'.$x.'.value = convertir_msmm(timeend'.$x.');
 				cambiaColorColumnas('.$x.', "stop", document);
@@ -125,30 +127,28 @@ function js_crono($x=1){
 					);
 		}
 		
+		// Suma penalizaciones al tiempo total
+		// para resetear hay que coger el valor del tiempo parado
 		function Penaliza'.$x.'(segundos){
-			timetotal'.$x.' = new Date();
-			timetotal'.$x.'.setTime(timeend'.$x.');
-			// Resetea penalizaciones a 00
 			if(segundos==0){
-				document.timeform.penalizaciones'.$x.'.value = "00";
+				document.timeform.tiempototal'.$x.'.value = document.timeform.timetextarea'.$x.'.value;
+				document.timeform.penalizaciones'.$x.'.value = "0";
+			} else {
+				var penalizaciones = document.timeform.penalizaciones'.$x.'.value;
+				var tiempototal = document.timeform.tiempototal'.$x.'.value;
+				document.timeform.tiempototal'.$x.'.value = suma_segundos(tiempototal, segundos);
+				document.timeform.penalizaciones'.$x.'.value = parseFloat(penalizaciones) + parseFloat(segundos);
+				$("#ok'.$x.'").attr("class", "fas fa-exclamation-triangle");
+				save('.$x.',
+						$(\'#idstage\').val(),
+						$(\'#idrally\').val(),
+						$(\'#stage\').val(),
+						$(\'#idsignedup'.$x.'\').val(),
+						$(\'#timetextarea'.$x.'\').val(),
+						$(\'#penalizaciones'.$x.'\').val(),
+						$(\'#tiempototal'.$x.'\').val()
+						);
 			}
-			// Suma penalizaciones al tiempo total
-			else {
-				var penalizaciones = parseFloat(document.timeform.penalizaciones'.$x.'.value) + segundos;
-				timetotal'.$x.'.setMilliseconds(timetotal'.$x.'.getMilliseconds() + penalizaciones*1000);
-				document.timeform.penalizaciones'.$x.'.value = penalizaciones;
-			}
-			document.timeform.tiempototal'.$x.'.value = convertir_msmm(timetotal'.$x.');
-			$("#ok'.$x.'").attr("class", "fas fa-exclamation-triangle");
-			save('.$x.',
-					 $(\'#idstage\').val(),
-					 $(\'#idrally\').val(),
-					 $(\'#stage\').val(),
-					 $(\'#idsignedup'.$x.'\').val(),
-					 $(\'#timetextarea'.$x.'\').val(),
-					 $(\'#penalizaciones'.$x.'\').val(),
-					 $(\'#tiempototal'.$x.'\').val()
-					);
 		}
 		
 		function Abandona'.$x.'() {
@@ -158,12 +158,9 @@ function js_crono($x=1){
 		}
 		
 		function ResetAbandona'.$x.'() {
-			timetotal'.$x.' = new Date();
-			timetotal'.$x.'.setTime(timeend'.$x.');
-			var penalizaciones = parseFloat(document.timeform.penalizaciones'.$x.'.value);
-			timetotal'.$x.'.setMilliseconds(timetotal'.$x.'.getMilliseconds() + penalizaciones*1000);
-			document.timeform.tiempototal'.$x.'.value = convertir_msmm(timetotal'.$x.');
-			//document.timeform.tiempototal'.$x.'.value = document.timeform.timetextarea'.$x.'.value;
+			var penalizaciones = document.timeform.penalizaciones'.$x.'.value;
+			var tiempo = document.timeform.timetextarea'.$x.'.value;
+			document.timeform.tiempototal'.$x.'.value = suma_segundos(tiempo, penalizaciones);
 			cambiaColorColumnas('.$x.', "stop", document);
 			$("#ok'.$x.'").attr("class", "fas fa-exclamation-triangle");
 		}
@@ -189,7 +186,7 @@ function titulos_columnas($campos){
 //	 $x : 			número de fila EMPIEZA EN 1 para que coincida con el id de la tabla MySQL donde se guardan los tiempos
 //	 $campos :		array con los nombres de los campos a mostrar -- array(0=>'num', 1=>'nombre', 2=>'chasis')
 //   $inscripcion   array con los datos de los pilotos (tabla signedup) -- $piloto['nombre'] = "Pepe"
-function filas_crono($x, $campos, $inscripcion, $timetextarea, $penalizaciones, $tiempototal){
+function filas_crono($x, $campos, $inscripcion, $timetextarea, $time_penalties, $tiempototal, $penalizaciones){
 	echo ('<tr id="fila'.$x.'">');
 	foreach($campos as $campo){
 		echo ('<td id="col_campo_'.$campo.$x.'">
@@ -205,12 +202,11 @@ function filas_crono($x, $campos, $inscripcion, $timetextarea, $penalizaciones, 
 				<input type="button" id="stop" class="btn btn-danger btn-sm" name="stop" value="Stop" onclick="Stop'.$x.'()">
 				<input type="button" id="reset" class="btn btn-dark btn-sm" name="reset" value="Reset" onclick="Reset'.$x.'();Penaliza'.$x.'(0)"></td>
 			<td id="col_penalizaciones'.$x.'">
-				<input type="text" id="penalizaciones'.$x.'" name="penalizaciones'.$x.'" value="'.$penalizaciones.'"><br>
-				<input type="button" id="cono" class="btn btn-info btn-sm" name="cono" value="Cono" onclick="Penaliza'.$x.'(0.5)">
-				<input type="button" id="recorte" class="btn btn-info btn-sm" name="recorte" value="Recorte" onclick="Penaliza'.$x.'(5)">
-				<input type="button" id="cono" class="btn btn-info btn-sm" name="fin" value="+1s" onclick="Penaliza'.$x.'(1)">
-				<input type="button" id="p_reset" class="btn btn-dark btn-sm" name="p_reset" value="Reset" onclick="Penaliza'.$x.'(0)">
-			</td>
+				<input type="text" id="penalizaciones'.$x.'" name="penalizaciones'.$x.'" value="'.$time_penalties.'"><br>');
+	foreach($penalizaciones as $penalizacion){
+		echo (' <input type="button" class="btn btn-info btn-sm" value="'.$penalizacion['name'].'" onclick="Penaliza'.$x.'('.$penalizacion['seconds'].')">');
+	}
+	echo (' </td>
 			<td id="col_tiempototal'.$x.'">
 				<input type="text" id="tiempototal'.$x.'" name="tiempototal'.$x.'" value="'.$tiempototal.'"><br>
 				<input type="button" id="abandona" class="btn btn-danger btn-sm" name="abandona" value="Abandona" onclick="Abandona'.$x.'()">

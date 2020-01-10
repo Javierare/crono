@@ -28,10 +28,10 @@ include('header.php');
                   <?php include('errors.php'); ?>
                 </div>
                 <div class="form-group">
-                  <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password" name="password_1"required>
+                  <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password" name="password_1" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" title="Mayúscula, minúscula y número" required>
                 </div>
                 <div class="form-group">
-                  <input type="password" class="form-control form-control-user" id="exampleRepeatPassword" placeholder="Repeat Password" name="password_2" required>
+                  <input type="password" class="form-control form-control-user" id="exampleRepeatPassword" placeholder="Repeat Password" name="password_2" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" title="Mayúscula, minúscula y número" required>
                 </div>
                 <input type="hidden" name="fp_code" value="<?php echo $_REQUEST['fp_code']; ?>"/>
                 <input type="hidden" name="prefix" value="<?php echo $_REQUEST['prefix']; ?>"/>

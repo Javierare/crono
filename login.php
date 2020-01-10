@@ -31,13 +31,10 @@ include ('header.php');
                       <?php include('errors.php'); ?>
                     </div>
                     <div class="form-group">
-                      <input type="email" class="form-control form-control-user" id="exampleInputEmail" aria-describedby="emailHelp" placeholder="Enter Email Address..." name="email" required>
-                    </div>
-                    <div class="invalid-feedback">
-                      Please choose a username.
+                      <input type="email" class="form-control form-control-user" placeholder="Email" name="email" required>
                     </div>
                     <div class="form-group">
-                      <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password" name="password" required>
+                      <input type="password" class="form-control form-control-user" placeholder="Contraseña" name="password" required>
                     </div>
                       <?php select_clubes(); ?>
                     <div class="form-group">

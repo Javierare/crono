@@ -30,17 +30,17 @@ include('header.php');
                 <?php select_clubes(); ?>
                 <hr>
                 <div class="form-group">
-                  <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="User Name" name="username" required>
+                  <input type="text" class="form-control form-control-user" id="exampleFirstName" placeholder="Nombre de usuario" name="username" required>
                 </div>
                 <div class="form-group">
-                  <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="Email Address" name="email" required>
+                  <input type="email" class="form-control form-control-user" id="exampleInputEmail" placeholder="Dirección de Email" name="email" required>
                 </div>
                 <div class="form-group row">
                   <div class="col-sm-6 mb-3 mb-sm-0">
-                    <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Password" name="password_1" required>
+                    <input type="password" class="form-control form-control-user" id="exampleInputPassword" placeholder="Contraseña" name="password_1" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" title="Mayúscula, minúscula y número" required>
                   </div>
                   <div class="col-sm-6">
-                    <input type="password" class="form-control form-control-user" id="exampleRepeatPassword" placeholder="Repeat Password" name="password_2" required>
+                    <input type="password" class="form-control form-control-user" id="exampleRepeatPassword" placeholder="Repite Contraseña" name="password_2" pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?!.*\s).*$" title="Mayúscula, minúscula y número" required>
                   </div>
                 </div>
                 <div class="form-group">
